@@ -1,45 +1,116 @@
-
+<!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karte - KCANG</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background: #f4f4f4;
-        }
-        .map-container {
-            max-width: 900px;
-            margin: auto;
-            background: #fff;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        iframe {
-            border: none;
-            width: 100%;
-            height: 300px;
-            border-radius: 4px;
-        }
-        p {
-            text-align: center;
-            margin-top: 10px;
-        }
-        a {
-            color: #0078A8;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Bubatz Karte</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      height: 100%;
+    }
+    .navbar {
+      background-color: #007bff;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+    }
+    .navbar h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      text-align: center;
+      flex: 1;
+    }
+    .navbar button {
+      background-color: white;
+      color: #007bff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    iframe {
+      width: 100%;
+      height: 70vh;
+      border: none;
+    }
+    .fragen {
+      padding: 1rem 2rem;
+    }
+    .frage {
+      margin-bottom: 1.5rem;
+    }
+    .textfeld {
+      display: none;
+      margin-top: 0.5rem;
+    }
+  </style>
 </head>
 <body>
-    <div class="map-container">
-       <iframe width="100%" height="60%" frameborder="0" allowfullscreen allow="geolocation" src="//umap.openstreetmap.de/de/map/kcang-karte-prev-nagold_97560?scaleControl=false&miniMap=false&scrollWheelZoom=true&zoomControl=false&editMode=disabled&moreControl=true&searchControl=false&tilelayersControl=false&embedControl=false&datalayersControl=false&onLoadPanel=none&captionBar=false&captionMenus=false&datalayers=aa8f6e3c-583d-4b6e-865b-120ae3feb1da%2Cd8343e03-07f9-4e20-9c08-428c08c250f8&fullscreenControl=false&captionControl=false&locateControl=true&measureControl=false&editinosmControl=false#15/48.5496/8.7174"></iframe>
+
+  <!-- NAVIGATION -->
+  <div class="navbar">
+    <div></div>
+    <h1>POLIZEI</h1>
+    <button onclick="locateUser()">📍 Standort ermitteln</button>
+  </div>
+
+  <!-- KARTE -->
+  <iframe id="mapframe" src="//umap.openstreetmap.de/de/map/kcang-karte-prev-nagold_97560?scaleControl=false&miniMap=false&scrollWheelZoom=true&zoomControl=false&editMode=disabled&moreControl=true&searchControl=false&tilelayersControl=false&embedControl=false&datalayersControl=false&onLoadPanel=none&captionBar=false&captionMenus=false&datalayers=aa8f6e3c-583d-4b6e-865b-120ae3feb1da%2Cd8343e03-07f9-4e20-9c08-428c08c250f8&fullscreenControl=false&captionControl=false&locateControl=true&measureControl=false&editinosmControl=false#15/48.5496/8.7174"></iframe>
+
+  <!-- FRAGEN -->
+  <div class="fragen">
+    <div class="frage">
+      <label>Sind Minderjährige in unmittelbarer Gegenwart?</label><br>
+      <button onclick="zeigeText(this)">Ja</button>
+      <button>Nein</button>
+      <div class="textfeld">➤ Beachten Sie: In Gegenwart von Minderjährigen ist Konsum untersagt.</div>
     </div>
+
+    <div class="frage">
+      <label>Befinden Sie sich in einer der roten Zonen?</label><br>
+      <button onclick="zeigeText(this)">Ja</button>
+      <button>Nein</button>
+      <div class="textfeld">➤ Achtung: In roten Zonen ist Konsum komplett verboten.</div>
+    </div>
+
+    <div class="frage">
+      <label>Befinden Sie sich in einer der gelben Zonen und es ist zwischen 07-20 Uhr?</label><br>
+      <button onclick="zeigeText(this)">Ja</button>
+      <button>Nein</button>
+      <div class="textfeld">➤ Hinweis: In gelben Zonen ist Konsum zwischen 07:00 – 20:00 Uhr untersagt.</div>
+    </div>
+  </div>
+
+  <script>
+    // Zeigt Text bei "Ja"-Antwort
+    function zeigeText(button) {
+      const container = button.parentElement;
+      const textfeld = container.querySelector('.textfeld');
+      textfeld.style.display = 'block';
+    }
+
+    // Standort ermitteln und Karte aktualisieren
+    function locateUser() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          const zoom = 16;
+          const frame = document.getElementById('mapframe');
+          frame.src = frame.src.split('#')[0] + `#${zoom}/${lat}/${lon}`;
+        }, () => {
+          alert("Standort konnte nicht ermittelt werden.");
+        });
+      } else {
+        alert("Geolocation wird nicht unterstützt.");
+      }
+    }
+  </script>
+
 </body>
 </html>
