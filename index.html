@@ -141,8 +141,20 @@
     }).addTo(map);
 
     // uMap Datenlayer laden (z.B. von deinem uMap-Projekt)
-    const uMapGeoJsonLayer1 = 'https://umap.openstreetmap.de/en/datalayer/aa8f6e3c-583d-4b6e-865b-120ae3feb1da/';
-    const uMapGeoJsonLayer2 = 'https://umap.openstreetmap.de/en/datalayer/d8343e03-07f9-4e20-9c08-428c08c250f8/';
+const customGeoJsonUrl = 'https://raw.githubusercontent.com/nooqqhh/kcangnagold/main/kcang_karte_prev_nagold.geojson';
+
+fetch(customGeoJsonUrl)
+  .then(res => res.json())
+  .then(data => {
+    L.geoJSON(data, {
+      style: {
+        color: '#ff0000',
+        weight: 2,
+        fillOpacity: 0.2
+      }
+    }).addTo(map);
+  })
+  .catch(err => console.error("GeoJSON konnte nicht geladen werden:", err));
 
     fetch(uMapGeoJsonLayer1)
       .then(res => res.json())
