@@ -4,17 +4,13 @@
   <meta charset="UTF-8">
   <title>Bubatz Karte</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body, html {
       margin: 0;
       padding: 0;
+      height: 100%;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f9f9f9;
-      color: #333;
     }
 
     .navbar {
@@ -30,7 +26,6 @@
     .navbar h1 {
       margin: 0;
       font-size: 1.5rem;
-      flex: 1;
     }
 
     .navbar button {
@@ -50,10 +45,9 @@
       transform: scale(1.03);
     }
 
-    iframe {
-      width: 100%;
+    #map {
       height: 70vh;
-      border: none;
+      width: 100%;
     }
 
     .fragen {
@@ -101,38 +95,17 @@
       border-radius: 4px;
       font-size: 0.95rem;
     }
-
-    @media (max-width: 600px) {
-      .navbar h1 {
-        font-size: 1.3rem;
-      }
-
-      .navbar button {
-        margin-top: 0.5rem;
-        width: 100%;
-      }
-
-      .frage button {
-        width: 48%;
-        margin-bottom: 0.4rem;
-      }
-    }
   </style>
 </head>
 <body>
 
-  <!-- NAVIGATION -->
   <div class="navbar">
     <h1>POLIZEI</h1>
     <button onclick="locateUser()">Standort</button>
   </div>
 
-  <!-- KARTE -->
-  <iframe id="mapframe"
-    src="//umap.openstreetmap.de/de/map/kcang-karte-prev-nagold_97560?scaleControl=false&miniMap=false&scrollWheelZoom=true&zoomControl=false&editMode=disabled&moreControl=true&searchControl=false&tilelayersControl=false&embedControl=false&datalayersControl=false&onLoadPanel=none&captionBar=false&captionMenus=false&datalayers=aa8f6e3c-583d-4b6e-865b-120ae3feb1da%2Cd8343e03-07f9-4e20-9c08-428c08c250f8&fullscreenControl=false&captionControl=false&locateControl=false&measureControl=false&editinosmControl=false#15/48.5496/8.7174">
-  </iframe>
+  <div id="map"></div>
 
-  <!-- FRAGEN -->
   <div class="fragen">
     <div class="frage">
       <label>Sind Minderjährige in unmittelbarer Gegenwart?</label>
@@ -156,29 +129,60 @@
     </div>
   </div>
 
+  <!-- Leaflet + Script -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    function zeigeText(button) {
-      const container = button.parentElement;
-      const textfeld = container.querySelector('.textfeld');
-      textfeld.style.display = 'block';
-    }
+    let map = L.map('map').setView([48.5496, 8.7174], 15);
+
+    // OSM Basiskarte
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap-Mitwirkende'
+    }).addTo(map);
+
+    // uMap Datenlayer laden (z.B. von deinem uMap-Projekt)
+    const uMapGeoJsonLayer1 = 'https://umap.openstreetmap.de/en/datalayer/aa8f6e3c-583d-4b6e-865b-120ae3feb1da/';
+    const uMapGeoJsonLayer2 = 'https://umap.openstreetmap.de/en/datalayer/d8343e03-07f9-4e20-9c08-428c08c250f8/';
+
+    fetch(uMapGeoJsonLayer1)
+      .then(res => res.json())
+      .then(data => L.geoJSON(data).addTo(map));
+
+    fetch(uMapGeoJsonLayer2)
+      .then(res => res.json())
+      .then(data => L.geoJSON(data).addTo(map));
+
+    // Standortmarker
+    let userMarker;
 
     function locateUser() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
-          const zoom = 16;
-          const frame = document.getElementById('mapframe');
-          const baseUrl = frame.src.split('#')[0];
-          frame.src = `${baseUrl}#${zoom}/${lat}/${lon}`;
-          alert(`Standort ermittelt: ${lat.toFixed(4)}, ${lon.toFixed(4)}\nKarte wurde zentriert.`);
-        }, (error) => {
-          alert("Standort konnte nicht ermittelt werden. Bitte Berechtigungen prüfen.");
+
+          if (userMarker) {
+            userMarker.setLatLng([lat, lon]);
+          } else {
+            userMarker = L.marker([lat, lon], {
+              title: "Ihr Standort",
+              alt: "Ihr Standort"
+            }).addTo(map).bindPopup("📍 Sie sind hier.").openPopup();
+          }
+
+          map.setView([lat, lon], 16);
+        }, () => {
+          alert("Standort konnte nicht ermittelt werden.");
         });
       } else {
-        alert("Geolocation wird von Ihrem Gerät nicht unterstützt.");
+        alert("Geolocation wird nicht unterstützt.");
       }
+    }
+
+    function zeigeText(button) {
+      const container = button.parentElement;
+      const textfeld = container.querySelector('.textfeld');
+      textfeld.style.display = 'block';
     }
   </script>
 
