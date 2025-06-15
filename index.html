@@ -13,8 +13,8 @@
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', sans-serif;
-      height: 100%;
-      background-color: #f5f5f5;
+      background-color: #f9f9f9;
+      color: #333;
     }
 
     .navbar {
@@ -23,32 +23,31 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1rem;
+      padding: 0.8rem 1rem;
       flex-wrap: wrap;
     }
 
     .navbar h1 {
       margin: 0;
-      font-size: 1.8rem;
-      text-align: center;
-      flex: 1 1 100%;
+      font-size: 1.5rem;
+      flex: 1;
     }
 
     .navbar button {
       background-color: white;
       color: #007bff;
-      border: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 6px;
+      border: 1px solid #007bff;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
       cursor: pointer;
-      font-weight: bold;
-      font-size: 1rem;
+      font-weight: 500;
+      font-size: 0.95rem;
       transition: background-color 0.3s ease, transform 0.2s ease;
     }
 
     .navbar button:hover {
-      background-color: #e6e6e6;
-      transform: scale(1.05);
+      background-color: #f0f0f0;
+      transform: scale(1.03);
     }
 
     iframe {
@@ -58,34 +57,38 @@
     }
 
     .fragen {
-      padding: 1.5rem 2rem;
+      padding: 1.5rem 1rem;
+      max-width: 800px;
+      margin: 0 auto;
     }
 
     .frage {
-      margin-bottom: 2rem;
+      margin-bottom: 1.8rem;
     }
 
     .frage label {
-      font-weight: bold;
-      font-size: 1.1rem;
+      font-weight: 600;
+      font-size: 1.05rem;
+      display: block;
+      margin-bottom: 0.5rem;
     }
 
     .frage button {
-      margin: 0.5rem 0.5rem 0 0;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 6px;
-      font-size: 1rem;
-      font-weight: bold;
-      background: linear-gradient(to right, #007bff, #00c6ff);
-      color: white;
+      margin: 0.4rem 0.4rem 0 0;
+      padding: 0.4rem 0.9rem;
+      border: 1px solid #007bff;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      background: white;
+      color: #007bff;
       cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.3s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .frage button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+      transform: scale(1.03);
+      box-shadow: 0 2px 6px rgba(0, 123, 255, 0.2);
     }
 
     .textfeld {
@@ -94,9 +97,25 @@
       background-color: #fff3cd;
       color: #856404;
       padding: 0.8rem;
-      border-left: 5px solid #ffc107;
+      border-left: 4px solid #ffc107;
       border-radius: 4px;
       font-size: 0.95rem;
+    }
+
+    @media (max-width: 600px) {
+      .navbar h1 {
+        font-size: 1.3rem;
+      }
+
+      .navbar button {
+        margin-top: 0.5rem;
+        width: 100%;
+      }
+
+      .frage button {
+        width: 48%;
+        margin-bottom: 0.4rem;
+      }
     }
   </style>
 </head>
@@ -105,30 +124,32 @@
   <!-- NAVIGATION -->
   <div class="navbar">
     <h1>POLIZEI</h1>
-    <button onclick="locateUser()">📍 Standort ermitteln</button>
+    <button onclick="locateUser()">Standort</button>
   </div>
 
   <!-- KARTE -->
-  <iframe id="mapframe" src="//umap.openstreetmap.de/de/map/kcang-karte-prev-nagold_97560?scaleControl=false&miniMap=false&scrollWheelZoom=true&zoomControl=false&editMode=disabled&moreControl=true&searchControl=false&tilelayersControl=false&embedControl=false&datalayersControl=false&onLoadPanel=none&captionBar=false&captionMenus=false&datalayers=aa8f6e3c-583d-4b6e-865b-120ae3feb1da%2Cd8343e03-07f9-4e20-9c08-428c08c250f8&fullscreenControl=false&captionControl=false&locateControl=true&measureControl=false&editinosmControl=false#15/48.5496/8.7174"></iframe>
+  <iframe id="mapframe"
+    src="//umap.openstreetmap.de/de/map/kcang-karte-prev-nagold_97560?scaleControl=false&miniMap=false&scrollWheelZoom=true&zoomControl=false&editMode=disabled&moreControl=true&searchControl=false&tilelayersControl=false&embedControl=false&datalayersControl=false&onLoadPanel=none&captionBar=false&captionMenus=false&datalayers=aa8f6e3c-583d-4b6e-865b-120ae3feb1da%2Cd8343e03-07f9-4e20-9c08-428c08c250f8&fullscreenControl=false&captionControl=false&locateControl=false&measureControl=false&editinosmControl=false#15/48.5496/8.7174">
+  </iframe>
 
   <!-- FRAGEN -->
   <div class="fragen">
     <div class="frage">
-      <label>Sind Minderjährige in unmittelbarer Gegenwart?</label><br>
+      <label>Sind Minderjährige in unmittelbarer Gegenwart?</label>
       <button onclick="zeigeText(this)">Ja</button>
       <button>Nein</button>
       <div class="textfeld">➤ Beachten Sie: In Gegenwart von Minderjährigen ist Konsum untersagt.</div>
     </div>
 
     <div class="frage">
-      <label>Befinden Sie sich in einer der roten Zonen?</label><br>
+      <label>Befinden Sie sich in einer der roten Zonen?</label>
       <button onclick="zeigeText(this)">Ja</button>
       <button>Nein</button>
       <div class="textfeld">➤ Achtung: In roten Zonen ist Konsum komplett verboten.</div>
     </div>
 
     <div class="frage">
-      <label>Befinden Sie sich in einer der gelben Zonen und es ist zwischen 07-20 Uhr?</label><br>
+      <label>Befinden Sie sich in einer der gelben Zonen und es ist zwischen 07-20 Uhr?</label>
       <button onclick="zeigeText(this)">Ja</button>
       <button>Nein</button>
       <div class="textfeld">➤ Hinweis: In gelben Zonen ist Konsum zwischen 07:00 – 20:00 Uhr untersagt.</div>
@@ -136,14 +157,12 @@
   </div>
 
   <script>
-    // Zeigt Text bei "Ja"-Antwort
     function zeigeText(button) {
       const container = button.parentElement;
       const textfeld = container.querySelector('.textfeld');
       textfeld.style.display = 'block';
     }
 
-    // Standort ermitteln und Karte aktualisieren
     function locateUser() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
@@ -151,13 +170,14 @@
           const lon = position.coords.longitude;
           const zoom = 16;
           const frame = document.getElementById('mapframe');
-          frame.src = frame.src.split('#')[0] + `#${zoom}/${lat}/${lon}`;
-          alert(`Standort ermittelt: ${lat.toFixed(4)}, ${lon.toFixed(4)}\n(Kartenpunkt wird ggf. nicht angezeigt, nur zentriert)`);
-        }, () => {
-          alert("Standort konnte nicht ermittelt werden.");
+          const baseUrl = frame.src.split('#')[0];
+          frame.src = `${baseUrl}#${zoom}/${lat}/${lon}`;
+          alert(`Standort ermittelt: ${lat.toFixed(4)}, ${lon.toFixed(4)}\nKarte wurde zentriert.`);
+        }, (error) => {
+          alert("Standort konnte nicht ermittelt werden. Bitte Berechtigungen prüfen.");
         });
       } else {
-        alert("Geolocation wird nicht unterstützt.");
+        alert("Geolocation wird von Ihrem Gerät nicht unterstützt.");
       }
     }
   </script>
