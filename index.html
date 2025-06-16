@@ -145,6 +145,7 @@ const customGeoJsonUrl = 'https://raw.githubusercontent.com/nooqqhh/kcangnagold/
 
 
 let redZoneLayer;
+let redZoneDataLoaded = false;
 
 fetch(customGeoJsonUrl)
   .then(res => res.json())
@@ -156,21 +157,22 @@ fetch(customGeoJsonUrl)
         fillOpacity: 0.2
       }
     }).addTo(map);
+    redZoneDataLoaded = true;
   })
-  .catch(err => console.error("GeoJSON konnte nicht geladen werden:", err));
-
-    fetch(uMapGeoJsonLayer1)
-      .then(res => res.json())
-      .then(data => L.geoJSON(data).addTo(map));
-
-    fetch(uMapGeoJsonLayer2)
-      .then(res => res.json())
-      .then(data => L.geoJSON(data).addTo(map));
+  .catch(err => {
+    console.error("GeoJSON konnte nicht geladen werden:", err);
+    redZoneDataLoaded = false;
+  });
 
     // Standortmarker
     let userMarker;
 
 function locateUser() {
+  if (!redZoneDataLoaded) {
+    alert("Karte wird noch geladen. Bitte einen Moment warten und erneut versuchen.");
+    return;
+  }
+
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((position) => {
       const lat = position.coords.latitude;
@@ -190,11 +192,25 @@ function locateUser() {
 
       // Prüfen ob innerhalb roter Zone
       let inRedZone = false;
-      if (redZoneLayer) {
-        redZoneLayer.eachLayer(layer => {
-          if (layer instanceof L.Polygon && layer.getBounds().contains(userLatLng)) {
+      redZoneLayer.eachLayer(layer => {
+        if (layer instanceof L.Polygon || layer instanceof L.MultiPolygon) {
+          if (layer.getBounds().contains(userLatLng)) {
             inRedZone = true;
           }
+        }
+      });
+
+      if (inRedZone) {
+        showRedZoneWarning();
+      }
+
+    }, (error) => {
+      alert("Standort konnte nicht ermittelt werden: " + error.message);
+    });
+  } else {
+    alert("Geolocation wird nicht unterstützt.");
+  }
+}
         });
       }
 
