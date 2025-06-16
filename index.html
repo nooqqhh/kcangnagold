@@ -134,97 +134,78 @@
   <script>
     let map = L.map('map').setView([48.5496, 8.7174], 15);
 
-    // OSM Basiskarte
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; OpenStreetMap-Mitwirkende'
     }).addTo(map);
 
-    // uMap Datenlayer laden (z.B. von deinem uMap-Projekt)
-const customGeoJsonUrl = 'https://raw.githubusercontent.com/nooqqhh/kcangnagold/main/kcang_karte_prev_nagold.geojson';
+    const customGeoJsonUrl = 'https://raw.githubusercontent.com/nooqqhh/kcangnagold/main/kcang_karte_prev_nagold.geojson';
 
+    let redZoneLayer;
+    let redZoneDataLoaded = false;
 
-let redZoneLayer;
-let redZoneDataLoaded = false;
-
-fetch(customGeoJsonUrl)
-  .then(res => res.json())
-  .then(data => {
-    redZoneLayer = L.geoJSON(data, {
-      style: {
-        color: '#ff0000',
-        weight: 2,
-        fillOpacity: 0.2
-      }
-    }).addTo(map);
-    redZoneDataLoaded = true;
-  })
-  .catch(err => {
-    console.error("GeoJSON konnte nicht geladen werden:", err);
-    redZoneDataLoaded = false;
-  });
-
-    // Standortmarker
-    let userMarker;
-
-function locateUser() {
-  if (!redZoneDataLoaded) {
-    alert("Karte wird noch geladen. Bitte einen Moment warten und erneut versuchen.");
-    return;
-  }
-
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((position) => {
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
-      const userLatLng = L.latLng(lat, lon);
-
-      if (userMarker) {
-        userMarker.setLatLng(userLatLng);
-      } else {
-        userMarker = L.marker(userLatLng, {
-          title: "Ihr Standort",
-          alt: "Ihr Standort"
-        }).addTo(map).bindPopup("📍 Sie sind hier.").openPopup();
-      }
-
-      map.setView(userLatLng, 16);
-
-      // Prüfen ob innerhalb roter Zone
-      let inRedZone = false;
-      redZoneLayer.eachLayer(layer => {
-        if (layer instanceof L.Polygon || layer instanceof L.MultiPolygon) {
-          if (layer.getBounds().contains(userLatLng)) {
-            inRedZone = true;
+    fetch(customGeoJsonUrl)
+      .then(res => res.json())
+      .then(data => {
+        redZoneLayer = L.geoJSON(data, {
+          style: {
+            color: '#ff0000',
+            weight: 2,
+            fillOpacity: 0.2
           }
-        }
+        }).addTo(map);
+        redZoneDataLoaded = true;
+      })
+      .catch(err => {
+        console.error("GeoJSON konnte nicht geladen werden:", err);
       });
 
-      if (inRedZone) {
-        showRedZoneWarning();
+    let userMarker;
+
+    function locateUser() {
+      if (!redZoneDataLoaded) {
+        alert("Karte wird noch geladen. Bitte einen Moment warten und erneut versuchen.");
+        return;
       }
 
-    }, (error) => {
-      alert("Standort konnte nicht ermittelt werden: " + error.message);
-    });
-  } else {
-    alert("Geolocation wird nicht unterstützt.");
-  }
-}
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          const userLatLng = L.latLng(lat, lon);
+
+          if (userMarker) {
+            userMarker.setLatLng(userLatLng);
+          } else {
+            userMarker = L.marker(userLatLng, {
+              title: "Ihr Standort",
+              alt: "Ihr Standort"
+            }).addTo(map).bindPopup("📍 Sie sind hier.").openPopup();
+          }
+
+          map.setView(userLatLng, 16);
+
+          // Prüfen ob innerhalb roter Zone
+          let inRedZone = false;
+          redZoneLayer.eachLayer(layer => {
+            if (layer instanceof L.Polygon || layer instanceof L.MultiPolygon) {
+              if (layer.getBounds().contains(userLatLng)) {
+                inRedZone = true;
+              }
+            }
+          });
+
+          if (inRedZone) {
+            showRedZoneWarning();
+          }
+
+        }, (error) => {
+          alert("Standort konnte nicht ermittelt werden: " + error.message);
         });
+      } else {
+        alert("Geolocation wird nicht unterstützt.");
       }
-
-      if (inRedZone) {
-        showRedZoneWarning();
-      }
-
-    }, () => {
-      alert("Standort konnte nicht ermittelt werden.");
-    });
-  } else {
-    alert("Geolocation wird nicht unterstützt.");
-  }
-}
+    }
 
     function zeigeText(button) {
       const container = button.parentElement;
@@ -233,37 +214,37 @@ function locateUser() {
     }
 
     function showRedZoneWarning() {
-  const warning = document.createElement('div');
-  warning.innerHTML = `
-    <div style="
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #ffdddd;
-      border: 1px solid #ff0000;
-      padding: 1rem 1.5rem;
-      border-radius: 8px;
-      z-index: 10000;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      max-width: 90%;
-      font-size: 1rem;
-      color: #a30000;
-    ">
-      <strong>⚠ Achtung:</strong> Sie befinden sich in einer Verbotszone!<br>Sichtweite zum Objekt muss gegeben sein!
-      <button onclick="this.parentElement.remove()" style="
-        float: right;
-        margin-left: 1rem;
-        background: none;
-        border: none;
-        color: #a30000;
-        font-size: 1.2rem;
-        cursor: pointer;
-      ">✖</button>
-    </div>
-  `;
-  document.body.appendChild(warning);
-}
+      const warning = document.createElement('div');
+      warning.innerHTML = `
+        <div style="
+          position: fixed;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #ffdddd;
+          border: 1px solid #ff0000;
+          padding: 1rem 1.5rem;
+          border-radius: 8px;
+          z-index: 10000;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+          max-width: 90%;
+          font-size: 1rem;
+          color: #a30000;
+        ">
+          <strong>⚠ Achtung:</strong> Sie befinden sich in einer Verbotszone!<br>Sichtweite zum Objekt muss gegeben sein!
+          <button onclick="this.parentElement.remove()" style="
+            float: right;
+            margin-left: 1rem;
+            background: none;
+            border: none;
+            color: #a30000;
+            font-size: 1.2rem;
+            cursor: pointer;
+          ">✖</button>
+        </div>
+      `;
+      document.body.appendChild(warning);
+    }
   </script>
 
 </body>
