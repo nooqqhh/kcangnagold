@@ -148,16 +148,21 @@
     fetch(customGeoJsonUrl)
       .then(res => res.json())
       .then(data => {
-redZoneLayer = L.geoJSON(data, {
-  style: function (feature) {
-    return {
-      color: feature.properties.stroke || '#ff0000',         // Linienfarbe
-      weight: 2,
-      fillColor: feature.properties.fill || '#ff0000',       // Füllfarbe
-      fillOpacity: feature.properties['fill-opacity'] || 0.2 // Transparenz
-    };
-  }
-}).addTo(map);
+        redZoneLayer = L.geoJSON(data, {
+          style: function (feature) {
+            return {
+              color: feature.properties.color || '#ff0000',
+              weight: 2,
+              fillColor: feature.properties.fill || feature.properties.color || '#ffcccc',
+              fillOpacity: feature.properties['fill-opacity'] ?? 0.2
+            };
+          },
+          onEachFeature: function (feature, layer) {
+            const name = feature.properties.name || "Unbenannte Zone";
+            const desc = feature.properties.description || "Keine Beschreibung verfügbar";
+            layer.bindPopup(`<strong>${name}</strong><br>${desc}`);
+          }
+        }).addTo(map);
         redZoneDataLoaded = true;
       })
       .catch(err => {
