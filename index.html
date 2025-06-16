@@ -143,10 +143,13 @@
     // uMap Datenlayer laden (z.B. von deinem uMap-Projekt)
 const customGeoJsonUrl = 'https://raw.githubusercontent.com/nooqqhh/kcangnagold/main/kcang_karte_prev_nagold.geojson';
 
+
+let redZoneLayer;
+
 fetch(customGeoJsonUrl)
   .then(res => res.json())
   .then(data => {
-    L.geoJSON(data, {
+    redZoneLayer = L.geoJSON(data, {
       style: {
         color: '#ff0000',
         weight: 2,
@@ -167,35 +170,84 @@ fetch(customGeoJsonUrl)
     // Standortmarker
     let userMarker;
 
-    function locateUser() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
+function locateUser() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      const userLatLng = L.latLng(lat, lon);
 
-          if (userMarker) {
-            userMarker.setLatLng([lat, lon]);
-          } else {
-            userMarker = L.marker([lat, lon], {
-              title: "Ihr Standort",
-              alt: "Ihr Standort"
-            }).addTo(map).bindPopup("📍 Sie sind hier.").openPopup();
-          }
-
-          map.setView([lat, lon], 16);
-        }, () => {
-          alert("Standort konnte nicht ermittelt werden.");
-        });
+      if (userMarker) {
+        userMarker.setLatLng(userLatLng);
       } else {
-        alert("Geolocation wird nicht unterstützt.");
+        userMarker = L.marker(userLatLng, {
+          title: "Ihr Standort",
+          alt: "Ihr Standort"
+        }).addTo(map).bindPopup("📍 Sie sind hier.").openPopup();
       }
-    }
+
+      map.setView(userLatLng, 16);
+
+      // Prüfen ob innerhalb roter Zone
+      let inRedZone = false;
+      if (redZoneLayer) {
+        redZoneLayer.eachLayer(layer => {
+          if (layer instanceof L.Polygon && layer.getBounds().contains(userLatLng)) {
+            inRedZone = true;
+          }
+        });
+      }
+
+      if (inRedZone) {
+        showRedZoneWarning();
+      }
+
+    }, () => {
+      alert("Standort konnte nicht ermittelt werden.");
+    });
+  } else {
+    alert("Geolocation wird nicht unterstützt.");
+  }
+}
 
     function zeigeText(button) {
       const container = button.parentElement;
       const textfeld = container.querySelector('.textfeld');
       textfeld.style.display = 'block';
     }
+
+    function showRedZoneWarning() {
+  const warning = document.createElement('div');
+  warning.innerHTML = `
+    <div style="
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ffdddd;
+      border: 1px solid #ff0000;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      z-index: 10000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      max-width: 90%;
+      font-size: 1rem;
+      color: #a30000;
+    ">
+      <strong>⚠ Achtung:</strong> Sie befinden sich in einer Verbotszone!<br>Sichtweite zum Objekt muss gegeben sein!
+      <button onclick="this.parentElement.remove()" style="
+        float: right;
+        margin-left: 1rem;
+        background: none;
+        border: none;
+        color: #a30000;
+        font-size: 1.2rem;
+        cursor: pointer;
+      ">✖</button>
+    </div>
+  `;
+  document.body.appendChild(warning);
+}
   </script>
 
 </body>
