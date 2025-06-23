@@ -98,13 +98,13 @@
     }
 
   .map-legend-below {
-    margin: 20px auto;
+    margin: 20px auto;            /* Zentriert horizontal */
     padding: 16px 20px;
     background: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 10px;
-    max-width: 90%;
-    width: 600px;
+    max-width: 600px;             /* exakt gleiche Breite wie z. B. .fragen-container */
+    width: 100%;
     font-family: sans-serif;
     font-size: 15px;
     line-height: 1.6;
@@ -122,7 +122,7 @@
     border-radius: 4px;
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: 600px) {
     .map-legend-below {
       font-size: 14px;
       padding: 12px 16px;
