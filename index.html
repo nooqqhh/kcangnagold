@@ -149,13 +149,14 @@
       .then(res => res.json())
       .then(data => {
         redZoneLayer = L.geoJSON(data, {
-          style: function (feature) {
-            return {
-              color: feature.properties.color || '#ff0000',
-              weight: 2,
-              fillColor: feature.properties.fill || feature.properties.color || '#ffcccc',
-              fillOpacity: feature.properties['fill-opacity'] ?? 0.5
-            };
+        style: function (feature) {
+        const umapOpts = feature.properties._umap_options || {};
+        return {
+        color: umapOpts.color || feature.properties.color || '#ff0000',
+        weight: 2,
+        fillColor: umapOpts.fill || feature.properties.fill || umapOpts.color || feature.properties.color || '#ffcccc',
+        fillOpacity: feature.properties['fill-opacity'] ?? 0.5
+          };
           },
           onEachFeature: function (feature, layer) {
             const name = feature.properties.name || "Unbenannte Zone";
