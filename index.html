@@ -96,6 +96,27 @@
       border-radius: 4px;
       font-size: 0.95rem;
     }
+
+  .map-legend-below {
+    margin-top: 15px;
+    padding: 12px 16px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    max-width: 600px;
+    font-family: sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .map-legend-below .legend-color {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    vertical-align: middle;
+    border: 1px solid #999;
+  }  
   </style>
 </head>
 <body>
@@ -107,6 +128,17 @@
 
   <div id="map"></div>
 
+
+
+<div class="map-legend-below">
+  <div><span class="legend-color" style="background-color: #ff0000;"></span> Absolute Cannabisverbotszone</div>
+  <div><span class="legend-color" style="background-color: #FFD700;"></span> 07–20 Uhr Verbotszone</div>
+</div>
+
+  
+
+
+  
   <div class="fragen">
     <div class="frage">
       <label>Sind Minderjährige in unmittelbarer Gegenwart?</label>
